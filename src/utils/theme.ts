@@ -144,6 +144,11 @@ export function generateCSSVariables(): string {
  */
 export function generateTailwindConfig() {
   return {
+    content: [
+      './src/**/*.{js,ts,jsx,tsx}',
+      './index.html',
+      './docs/**/*.{js,ts,jsx,tsx,html}'
+    ],
     theme: {
       extend: {
         colors: THEME_CONFIG.colors,
@@ -162,5 +167,6 @@ export function generateTailwindConfig() {
         },
       },
     },
+    plugins: [],
   };
 }

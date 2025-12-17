@@ -5,27 +5,23 @@
  * initialization, state management, and public API methods.
  */
 
-import { test, expect } from '@playwright/test';
+import { describe, test, expect, beforeEach, afterEach, jest } from '@jest/globals';
 import { mockElement } from './setup';
 
-test.describe('DCVSApp', () => {
+describe('DCVSApp', () => {
   let mockDocument: any;
   let mockWindow: any;
 
-  test.beforeEach(() => {
-    // Mock document methods
+  beforeEach(() => {
+    // Mock individual document methods instead of replacing the whole object
     mockDocument = {
       getElementById: jest.fn(),
       querySelector: jest.fn(),
       querySelectorAll: jest.fn(() => []),
       addEventListener: jest.fn(),
-      body: {
-        appendChild: jest.fn(),
-      },
       readyState: 'complete',
     };
 
-    // Mock window methods
     mockWindow = {
       addEventListener: jest.fn(),
       innerWidth: 1024,
@@ -43,48 +39,42 @@ test.describe('DCVSApp', () => {
       })),
     };
 
-    // Mock global objects
-    Object.defineProperty(global, 'document', {
+    // Mock document methods using jest.fn()
+    document.getElementById = mockDocument.getElementById;
+    document.querySelector = mockDocument.querySelector;
+    document.querySelectorAll = mockDocument.querySelectorAll;
+    document.addEventListener = mockDocument.addEventListener;
+    Object.defineProperty(document, 'readyState', {
       writable: true,
-      configurable: true,
-      value: mockDocument,
+      value: 'complete',
     });
 
-    Object.defineProperty(global, 'window', {
+    // Mock window properties
+    Object.defineProperty(window, 'innerWidth', {
       writable: true,
-      configurable: true,
-      value: mockWindow,
+      value: 1024,
     });
-
-    // Mock IntersectionObserver
-    global.IntersectionObserver = jest.fn(() => ({
-      observe: jest.fn(),
-      unobserve: jest.fn(),
-      disconnect: jest.fn(),
-    })) as any;
-
-    // Mock performance
-    global.performance = {
-      getEntriesByType: jest.fn(() => []),
-      mark: jest.fn(),
-      measure: jest.fn(),
-      now: jest.fn(() => Date.now()),
-    } as any;
+    Object.defineProperty(window, 'innerHeight', {
+      writable: true,
+      value: 768,
+    });
+    Object.defineProperty(window, 'pageYOffset', {
+      writable: true,
+      value: 0,
+    });
+    Object.defineProperty(window, 'pageXOffset', {
+      writable: true,
+      value: 0,
+    });
+    window.addEventListener = mockWindow.addEventListener;
+    window.matchMedia = mockWindow.matchMedia;
+    window.getComputedStyle = mockWindow.getComputedStyle;
 
     // Mock console to avoid noise
     global.console = {
       warn: jest.fn(),
       log: jest.fn(),
       error: jest.fn(),
-    } as any;
-
-    // Mock Node environment for crypto
-    global.crypto = {
-      createHash: jest.fn(() => ({
-        update: jest.fn(() => ({
-          digest: jest.fn(() => '2ef7bde6029a7a5ad52d7ee0158e2b8f1b8c0e3f8d3e6a1b2c4d5e6f7a8b9c0d1'),
-        })),
-      })),
     } as any;
   });
 
@@ -178,10 +168,10 @@ test.describe('DCVSApp', () => {
     it('should return readonly state that cannot be modified', () => {
       const state = app.getState();
 
-      // These operations should not throw errors, but they shouldn't affect the actual state
+      // Attempting to modify the frozen state should throw an error
       expect(() => {
         (state as any).isMobileMenuOpen = true;
-      }).not.toThrow();
+      }).toThrow();
 
       // Actual state should remain unchanged
       const freshState = app.getState();
@@ -259,9 +249,9 @@ test.describe('DCVSApp', () => {
   describe('Environment Detection', () => {
     it('should work in different viewport sizes', async () => {
       // Test mobile viewport
-      mockWindow.innerWidth = 375;
-      mockWindow.innerHeight = 667;
-      mockWindow.matchMedia.mockReturnValue({ matches: true, media: '(max-width: 768px)' });
+      Object.defineProperty(window, 'innerWidth', { value: 375 });
+      Object.defineProperty(window, 'innerHeight', { value: 667 });
+      window.matchMedia = jest.fn(() => ({ matches: true, media: '(max-width: 768px)' }));
 
       mockDocument.getElementById.mockImplementation((id) => {
         if (id === 'mobile-menu-button') return mockElement('button');

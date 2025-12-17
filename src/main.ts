@@ -365,7 +365,7 @@ class DCVSApp {
    * ```
    */
   public getState(): Readonly<AppState> {
-    return this.state;
+    return Object.freeze({ ...this.state });
   }
 }
 

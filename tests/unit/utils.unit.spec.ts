@@ -5,7 +5,7 @@
  * including hashing, debouncing, throttling, DOM utilities, and data manipulation functions.
  */
 
-import { describe, it, expect, jest, beforeEach, afterEach } from '@playwright/test';
+import { describe, it, expect, jest, beforeEach, afterEach } from '@jest/globals';
 
 // Mock crypto for consistent testing in Node.js environment
 const mockCrypto = {
@@ -62,7 +62,7 @@ describe('Utility Functions', () => {
       const hash1 = generateHash('test string');
       const hash2 = generateHash('test string');
 
-      expect(hash1).toBe('2ef7bde6'); // First 8 chars of mocked hash
+      expect(hash1).toBe('d5579c46'); // First 8 chars of SHA256 hash
       expect(hash2).toBe(hash1); // Should be consistent
     });
 
@@ -79,7 +79,7 @@ describe('Utility Functions', () => {
       const buffer = Buffer.from('test buffer');
       const hash = generateHash(buffer);
 
-      expect(hash).toBe('2ef7bde6');
+      expect(hash).toBe('525ef5f7');
     });
 
     it('should generate unique file hashes with timestamps', async () => {
@@ -294,7 +294,7 @@ describe('Utility Functions', () => {
       expect(id1).not.toBe(id2); // Should be different
 
       const prefixedId = generateId('test', 12);
-      expect(prefixedId).toBe('test_' + 'a'.repeat(12)); // Pattern check
+      expect(prefixedId).toMatch(/^test_[A-Za-z0-9]{12}$/); // Pattern check
       expect(prefixedId).toHaveLength(17); // 4 + 1 + 12
     });
 

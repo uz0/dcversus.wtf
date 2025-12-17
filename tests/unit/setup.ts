@@ -5,7 +5,57 @@
  * global mocks, DOM polyfills, and test utilities.
  */
 
-import { expect } from '@playwright/test';
+import { expect, jest } from '@jest/globals';
+
+// Mock DOM APIs for Node.js environment
+Object.defineProperty(global, 'IntersectionObserver', {
+  writable: true,
+  configurable: true,
+  value: jest.fn(() => ({
+    observe: jest.fn(),
+    unobserve: jest.fn(),
+    disconnect: jest.fn(),
+  })),
+});
+
+Object.defineProperty(global, 'ResizeObserver', {
+  writable: true,
+  configurable: true,
+  value: jest.fn(() => ({
+    observe: jest.fn(),
+    unobserve: jest.fn(),
+    disconnect: jest.fn(),
+  })),
+});
+
+Object.defineProperty(global, 'performance', {
+  writable: true,
+  configurable: true,
+  value: {
+    now: jest.fn(() => Date.now()),
+    mark: jest.fn(),
+    measure: jest.fn(),
+    getEntriesByType: jest.fn(() => []),
+  },
+});
+
+// Mock crypto for Node.js environment
+if (typeof global.crypto === 'undefined') {
+  const { createHash } = require('crypto');
+  Object.defineProperty(global, 'crypto', {
+    writable: true,
+    configurable: true,
+    value: {
+      createHash: jest.fn((algorithm: string) => createHash(algorithm)),
+      getRandomValues: jest.fn((arr: Uint8Array) => {
+        for (let i = 0; i < arr.length; i++) {
+          arr[i] = Math.floor(Math.random() * 256);
+        }
+        return arr;
+      }),
+    },
+  });
+}
 
 // Extend expect with custom matchers if needed
 expect.extend({
@@ -74,23 +124,6 @@ export const testUtils = {
         mark: jest.fn(),
         measure: jest.fn(),
       },
-    });
-  },
-
-  /**
-   * Mock console methods to avoid noise in tests
-   */
-  mockConsole: () => {
-    const originalConsole = { ...console };
-
-    beforeEach(() => {
-      console.log = jest.fn();
-      console.warn = jest.fn();
-      console.error = jest.fn();
-    });
-
-    afterEach(() => {
-      Object.assign(console, originalConsole);
     });
   },
 
