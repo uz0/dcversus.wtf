@@ -1,0 +1,9 @@
+<svg width="120" height="32" viewBox="0 0 120 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <g>
+    <!-- The Edge Story Logo with Purple Accent -->
+    <path d="M2 8 L2 24 L6 24 L6 12 L12 20 L18 12 L18 24 L22 24 L22 8 L18 8 L12 16 L6 8 Z" fill="#6A0DAD"/>
+    <text x="28" y="22" font-family="Inter, sans-serif" font-size="11" font-weight="600" fill="#111827">The Edge Story</text>
+    <path d="M108 10 L115 22 L111 22 L110 20 L106 20 L105 22 L101 22 Z" fill="#6A0DAD" opacity="0.7"/>
+    <circle cx="108" cy="16" r="1.5" fill="#111827"/>
+  </g>
+</svg>
