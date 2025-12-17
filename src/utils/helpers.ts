@@ -2,14 +2,46 @@ import crypto from 'crypto';
 import type { FileInfo } from '@/types';
 
 /**
- * Generate a SHA-256 hash for a file or string
+ * Generate a SHA-256 hash for content (string or Buffer)
+ *
+ * Creates a cryptographic hash of the provided content, useful for
+ * cache busting, content validation, or generating unique identifiers.
+ *
+ * @param content - The content to hash (string or Buffer)
+ * @returns The first 8 characters of the SHA-256 hex digest
+ *
+ * @example
+ * ```typescript
+ * const hash = generateHash('hello world');
+ * console.log(hash); // '2ef7bde6'
+ *
+ * const fileHash = generateHash(fileBuffer);
+ * console.log(fileHash); // 'a1b2c3d4'
+ * ```
  */
 export function generateHash(content: string | Buffer): string {
   return crypto.createHash('sha256').update(content).digest('hex').substring(0, 8);
 }
 
 /**
- * Generate file hash with timestamp for cache busting
+ * Generate a unique file hash with timestamp for cache busting
+ *
+ * Creates a timestamped hash that combines the file path, content hash,
+ * and current time to ensure unique identifiers for each build.
+ * Useful for asset versioning and cache invalidation.
+ *
+ * @param filePath - The file path to include in the hash
+ * @param content - The file content to hash
+ * @returns A unique hash string for cache busting
+ *
+ * @example
+ * ```typescript
+ * const hash = generateFileHash('styles/main.css', cssContent);
+ * console.log(hash); // 'f8e9a1b2'
+ *
+ * // Use in filenames
+ * const fileName = `styles.main.${hash}.css`;
+ * ```
  */
 export function generateFileHash(filePath: string, content: string): string {
   const timestamp = Date.now().toString();
@@ -18,7 +50,27 @@ export function generateFileHash(filePath: string, content: string): string {
 }
 
 /**
- * Debounce function calls
+ * Creates a debounced function that delays execution until after wait milliseconds
+ *
+ * Debouncing ensures that a function is only executed once during a specified
+ * time window, useful for optimizing performance of frequently called functions
+ * like search handlers, resize listeners, or auto-save operations.
+ *
+ * @template T - Function type with any parameters and unknown return type
+ * @param func - The function to debounce
+ * @param wait - The delay in milliseconds to wait before executing
+ * @returns A new debounced function that accepts the same parameters
+ *
+ * @example
+ * ```typescript
+ * const debouncedSearch = debounce((query: string) => {
+ *   console.log('Searching for:', query);
+ * }, 300);
+ *
+ * debouncedSearch('apple'); // Won't execute immediately
+ * debouncedSearch('banana'); // Cancels previous, delays execution
+ * // After 300ms: 'Searching for: banana'
+ * ```
  */
 export function debounce<T extends (...args: unknown[]) => unknown>(
   func: T,
@@ -38,7 +90,27 @@ export function debounce<T extends (...args: unknown[]) => unknown>(
 }
 
 /**
- * Throttle function calls
+ * Creates a throttled function that limits execution frequency
+ *
+ * Throttling ensures that a function can only be executed once every specified
+ * time period, regardless of how many times it's called. Useful for performance
+ * optimization of high-frequency events like scroll handlers, mouse movement, or
+ * resize events.
+ *
+ * @template T - Function type with any parameters and unknown return type
+ * @param func - The function to throttle
+ * @param limit - The time limit in milliseconds between executions
+ * @returns A new throttled function that accepts the same parameters
+ *
+ * @example
+ * ```typescript
+ * const throttledScroll = throttle(() => {
+ *   console.log('Scroll handler executed');
+ * }, 100);
+ *
+ * window.addEventListener('scroll', throttledScroll);
+ * // Will only execute once every 100ms, regardless of scroll speed
+ * ```
  */
 export function throttle<T extends (...args: unknown[]) => unknown>(
   func: T,

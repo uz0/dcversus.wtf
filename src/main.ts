@@ -4,7 +4,22 @@ import { debounce, throttle, scrollToElement, isMobileDevice } from '@/utils/hel
 // import { isInViewport } from '@/utils/helpers';
 
 /**
- * Application main entry point
+ * Main application class for DCVS (Professional Consulting Landing Page)
+ *
+ * This class manages the entire client-side application including:
+ * - Mobile menu navigation and responsive behavior
+ * - Smooth scrolling and navigation handling
+ * - Scroll-based animations and intersection observers
+ * - Viewport management and responsive interactions
+ * - State management for UI components
+ *
+ * @example
+ * ```typescript
+ * // App is automatically initialized when DOM is ready
+ * document.addEventListener('DOMContentLoaded', () => {
+ *   new DCVSApp();
+ * });
+ * ```
  */
 class DCVSApp {
   private state: AppState;
@@ -16,6 +31,13 @@ class DCVSApp {
     header: HTMLElement | null;
   };
 
+  /**
+   * Initialize the DCVS application
+   *
+   * Sets up the initial application state, caches DOM elements,
+   * and initializes all core functionality including event listeners,
+   * viewport management, and animations.
+   */
   constructor() {
     this.state = {
       isMobileMenuOpen: false,
@@ -36,6 +58,14 @@ class DCVSApp {
     this.init();
   }
 
+  /**
+   * Initialize all application functionality
+   *
+   * Sets up event listeners, viewport management, intersection observers,
+   * and animations. Marks the application as loaded and ready.
+   *
+   * @private
+   */
   private init(): void {
     this.setupEventListeners();
     this.updateViewport();
@@ -47,6 +77,14 @@ class DCVSApp {
     console.warn('🚀 DCVS App Initialized Successfully');
   }
 
+  /**
+   * Set up all event listeners for the application
+   *
+   * Configures event handlers for mobile menu, navigation, scroll/resize events,
+   * keyboard shortcuts, and image loading with appropriate throttling and debouncing.
+   *
+   * @private
+   */
   private setupEventListeners(): void {
     // Mobile menu toggle
     this.elements.mobileMenuButton?.addEventListener('click', this.toggleMobileMenu.bind(this));
@@ -273,14 +311,59 @@ class DCVSApp {
   }
 
   // Public API for external usage
+
+  /**
+   * Scroll to a specific section of the page
+   *
+   * Provides smooth scrolling functionality to any DOM element selector
+   * with an automatic offset for header navigation.
+   *
+   * @param selector - CSS selector for the target element
+   *
+   * @example
+   * ```typescript
+   * const app = new DCVSApp();
+   * app.scrollToSection('#about');
+   * app.scrollToSection('.contact-form');
+   * ```
+   */
   public scrollToSection(selector: string): void {
     scrollToElement(selector, -100);
   }
 
+  /**
+   * Toggle the mobile menu open/closed state
+   *
+   * Programmatically controls the mobile navigation menu visibility.
+   * Useful for custom menu triggers or programmatic control.
+   *
+   * @example
+   * ```typescript
+   * const app = new DCVSApp();
+   * app.toggleMenu(); // Toggle menu state
+   * ```
+   */
   public toggleMenu(): void {
     this.toggleMobileMenu();
   }
 
+  /**
+   * Get the current application state (read-only)
+   *
+   * Returns a read-only copy of the current application state including
+   * mobile menu status, current section, scroll position, viewport dimensions,
+   * and loading status.
+   *
+   * @returns Read-only application state object
+   *
+   * @example
+   * ```typescript
+   * const app = new DCVSApp();
+   * const state = app.getState();
+   * console.log(`Current section: ${state.currentSection}`);
+   * console.log(`Mobile menu open: ${state.isMobileMenuOpen}`);
+   * ```
+   */
   public getState(): Readonly<AppState> {
     return this.state;
   }

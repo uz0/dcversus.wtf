@@ -1,8 +1,31 @@
 /**
- * Development Tools and Utilities
+ * Development Tools and Utilities for debugging and performance monitoring
  *
- * These utilities are only available in development mode and help with debugging,
- * performance monitoring, and development workflow.
+ * This utility class provides comprehensive development tools that are only
+ * available in development mode (NODE_ENV === 'development'). It includes:
+ * - Performance metrics monitoring and Core Web Vitals tracking
+ * - Theme system debugging and CSS variable inspection
+ * - Network request monitoring and analysis
+ * - Accessibility checking tools
+ * - Bundle size analysis and optimization suggestions
+ * - Interactive debug panel with keyboard shortcuts
+ *
+ * All tools are automatically disabled in production builds to prevent
+ * performance impact and security risks.
+ *
+ * @example
+ * ```typescript
+ * // Initialize all dev tools (development only)
+ * DevTools.initialize();
+ *
+ * // Log performance metrics manually
+ * DevTools.logPerformance();
+ *
+ * // Debug theme system
+ * DevTools.debugThemeSystem();
+ * ```
+ *
+ * @since 1.0.0
  */
 
 declare global {
