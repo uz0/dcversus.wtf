@@ -14,6 +14,8 @@ export default defineConfig({
     trace: 'on-first-retry',
     screenshot: 'only-on-failure',
   },
+  // Use platform-agnostic snapshots
+  snapshotPathTemplate: '{testDir}/{testFileDir}/{testFileName}-{projectName}{ext}',
   projects: [
     {
       name: 'chromium',
