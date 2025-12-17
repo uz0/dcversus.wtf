@@ -20,7 +20,7 @@ export function generateFileHash(filePath: string, content: string): string {
 /**
  * Debounce function calls
  */
-export function debounce<T extends (...args: any[]) => any>(
+export function debounce<T extends (...args: unknown[]) => unknown>(
   func: T,
   wait: number,
 ): (...args: Parameters<T>) => void {
@@ -40,7 +40,7 @@ export function debounce<T extends (...args: any[]) => any>(
 /**
  * Throttle function calls
  */
-export function throttle<T extends (...args: any[]) => any>(
+export function throttle<T extends (...args: unknown[]) => unknown>(
   func: T,
   limit: number,
 ): (...args: Parameters<T>) => void {
@@ -191,17 +191,17 @@ export function generateId(prefix: string = '', length: number = 8): string {
 /**
  * Deep merge objects
  */
-export function deepMerge<T extends Record<string, any>>(target: T, ...sources: Partial<T>[]): T {
+export function deepMerge<T extends Record<string, unknown>>(target: T, ...sources: Partial<T>[]): T {
   if (!sources.length) return target;
   const source = sources.shift();
 
   if (source) {
     for (const key in source) {
       if (source[key] && typeof source[key] === 'object' && !Array.isArray(source[key])) {
-        if (!target[key]) target[key] = {} as any;
-        deepMerge(target[key], source[key] as any);
+        if (!target[key]) (target as Record<string, unknown>)[key] = {};
+        deepMerge(target[key] as Record<string, unknown>, source[key] as Record<string, unknown>);
       } else {
-        target[key] = source[key] as any;
+        (target as Record<string, unknown>)[key] = source[key];
       }
     }
   }
@@ -223,7 +223,7 @@ export function safeJsonParse<T>(json: string, fallback: T): T {
 /**
  * Check if value is empty
  */
-export function isEmpty(value: any): boolean {
+export function isEmpty(value: unknown): boolean {
   if (value == null) return true;
   if (Array.isArray(value) || typeof value === 'string') return value.length === 0;
   if (typeof value === 'object') return Object.keys(value).length === 0;

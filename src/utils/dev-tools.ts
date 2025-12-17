@@ -5,6 +5,19 @@
  * performance monitoring, and development workflow.
  */
 
+declare global {
+  interface Window {
+    DEV_TOOLS?: {
+      logPerformance: () => void;
+      debugThemeSystem: () => void;
+    };
+    DEV_NETWORK?: {
+      getRequests: () => unknown[];
+      clear: () => void;
+    };
+  }
+}
+
 export class DevTools {
   private static isDevelopment = process.env.NODE_ENV === 'development';
 
@@ -15,7 +28,7 @@ export class DevTools {
     if (!this.isDevelopment) return;
 
     const metrics = this.getPerformanceMetrics();
-    console.log('🚀 Performance Metrics:', metrics);
+    console.warn('🚀 Performance Metrics:', metrics);
 
     // Log Core Web Vitals
     this.logCoreWebVitals();
@@ -27,24 +40,40 @@ export class DevTools {
   private static getPerformanceMetrics() {
     const navigation = performance.getEntriesByType('navigation')[0] as PerformanceNavigationTiming;
 
+    interface MemoryInfo {
+      used: number;
+      total: number;
+      limit: number;
+    }
+
+    interface PerformanceMetrics {
+      domContentLoaded: number;
+      loadComplete: number;
+      totalTime: number;
+      resources: number;
+      totalSize: number;
+      memory: MemoryInfo | null;
+    }
+
+    const resources = performance.getEntriesByType('resource') as PerformanceResourceTiming[];
+
     return {
       // Navigation timing
       domContentLoaded: navigation.domContentLoadedEventEnd - navigation.domContentLoadedEventStart,
       loadComplete: navigation.loadEventEnd - navigation.loadEventStart,
-      totalTime: navigation.loadEventEnd - (navigation as any).navigationStart,
+      totalTime: navigation.loadEventEnd - (navigation as PerformanceNavigationTiming & { navigationStart: number }).navigationStart,
 
       // Resource timing
-      resources: performance.getEntriesByType('resource').length,
-      totalSize: performance.getEntriesByType('resource')
-        .reduce((sum, resource: any) => sum + (resource.transferSize || 0), 0),
+      resources: resources.length,
+      totalSize: resources.reduce((sum: number, resource: PerformanceResourceTiming) => sum + (resource.transferSize || 0), 0),
 
       // Memory usage (if available)
-      memory: (performance as any).memory ? {
-        used: Math.round((performance as any).memory.usedJSHeapSize / 1024 / 1024 * 100) / 100,
-        total: Math.round((performance as any).memory.totalJSHeapSize / 1024 / 1024 * 100) / 100,
-        limit: Math.round((performance as any).memory.jsHeapSizeLimit / 1024 / 1024 * 100) / 100,
+      memory: (performance as Performance & { memory?: MemoryInfo }).memory ? {
+        used: Math.round((performance as Performance & { memory: MemoryInfo }).memory!.used / 1024 / 1024 * 100) / 100,
+        total: Math.round((performance as Performance & { memory: MemoryInfo }).memory!.total / 1024 / 1024 * 100) / 100,
+        limit: Math.round((performance as Performance & { memory: MemoryInfo }).memory!.limit / 1024 / 1024 * 100) / 100,
       } : null,
-    };
+    } as PerformanceMetrics;
   }
 
   /**
@@ -55,26 +84,27 @@ export class DevTools {
     new PerformanceObserver((list) => {
       const entries = list.getEntries();
       const lastEntry = entries[entries.length - 1];
-      console.log(`🎯 LCP: ${Math.round(lastEntry.startTime)}ms`);
+      console.warn(`🎯 LCP: ${Math.round(lastEntry.startTime)}ms`);
     }).observe({ entryTypes: ['largest-contentful-paint'] });
 
     // First Input Delay
     new PerformanceObserver((list) => {
       const entries = list.getEntries();
-      const firstEntry = entries[0] as any;
+      const firstEntry = entries[0] as PerformanceEventTiming;
       const fid = firstEntry.processingStart - firstEntry.startTime;
-      console.log(`⚡ FID: ${Math.round(fid)}ms`);
+      console.warn(`⚡ FID: ${Math.round(fid)}ms`);
     }).observe({ entryTypes: ['first-input'] });
 
     // Cumulative Layout Shift
     let clsValue = 0;
     new PerformanceObserver((list) => {
-      for (const entry of list.getEntries() as any[]) {
-        if (!entry.hadRecentInput) {
-          clsValue += entry.value;
+      for (const entry of list.getEntries() as PerformanceEntry[]) {
+        const layoutShiftEntry = entry as PerformanceEntry & { value: number; hadRecentInput: boolean };
+        if (!layoutShiftEntry.hadRecentInput) {
+          clsValue += layoutShiftEntry.value;
         }
       }
-      console.log(`📐 CLS: ${clsValue.toFixed(3)}`);
+      console.warn(`📐 CLS: ${clsValue.toFixed(3)}`);
     }).observe({ entryTypes: ['layout-shift'] });
   }
 
@@ -84,8 +114,8 @@ export class DevTools {
   static debugThemeSystem(): void {
     if (!this.isDevelopment) return;
 
-    console.log('🎨 Theme System Debug:');
-    console.log('Brand Colors:', {
+    console.warn('🎨 Theme System Debug:');
+    console.warn('Brand Colors:', {
       orange: getComputedStyle(document.documentElement).getPropertyValue('--brand-orange'),
       purple: getComputedStyle(document.documentElement).getPropertyValue('--brand-purple'),
       yellow: getComputedStyle(document.documentElement).getPropertyValue('--brand-yellow'),
@@ -102,7 +132,7 @@ export class DevTools {
       }
     }
 
-    console.log('🎯 CSS Variables:', cssVars);
+    console.warn('🎯 CSS Variables:', cssVars);
   }
 
   /**
@@ -144,7 +174,7 @@ export class DevTools {
     document.body.appendChild(panel);
 
     // Make methods globally available
-    (window as any).DEV_TOOLS = {
+    window.DEV_TOOLS = {
       logPerformance: () => this.logPerformance(),
       debugThemeSystem: () => this.debugThemeSystem(),
     };
@@ -159,17 +189,17 @@ export class DevTools {
     const resources = performance.getEntriesByType('resource') as PerformanceResourceTiming[];
     const bundles = resources.filter(r => r.name.includes('.js') || r.name.includes('.css'));
 
-    console.log('📦 Bundle Analysis:');
+    console.warn('📦 Bundle Analysis:');
     bundles.forEach(bundle => {
       const size = bundle.transferSize || 0;
       const sizeKB = (size / 1024).toFixed(1);
       const loadTime = bundle.duration.toFixed(0);
 
-      console.log(`  ${bundle.name.split('/').pop()}: ${sizeKB}KB (${loadTime}ms)`);
+      console.warn(`  ${bundle.name.split('/').pop()}: ${sizeKB}KB (${loadTime}ms)`);
     });
 
     const totalSize = bundles.reduce((sum, bundle) => sum + (bundle.transferSize || 0), 0);
-    console.log(`  Total: ${(totalSize / 1024).toFixed(1)}KB`);
+    console.warn(`  Total: ${(totalSize / 1024).toFixed(1)}KB`);
   }
 
   /**
@@ -178,7 +208,7 @@ export class DevTools {
   static quickAccessibilityCheck(): void {
     if (!this.isDevelopment) return;
 
-    console.log('♿ Quick Accessibility Check:');
+    console.warn('♿ Quick Accessibility Check:');
 
     // Check for alt text
     const imagesWithoutAlt = document.querySelectorAll('img:not([alt])');
@@ -188,17 +218,17 @@ export class DevTools {
 
     // Check for proper heading structure
     const headings = document.querySelectorAll('h1, h2, h3, h4, h5, h6');
-    console.log(`  📝 Found ${headings.length} headings`);
+    console.warn(`  📝 Found ${headings.length} headings`);
 
     // Check for focusable elements
     const focusableElements = document.querySelectorAll(
       'button:not([disabled]), a[href], input:not([disabled]), select:not([disabled]), textarea:not([disabled])'
     );
-    console.log(`  🎯 Found ${focusableElements.length} focusable elements`);
+    console.warn(`  🎯 Found ${focusableElements.length} focusable elements`);
 
     // Check for ARIA labels
     const elementsWithAria = document.querySelectorAll('[aria-label], [aria-labelledby], [role]');
-    console.log(`  🏷️ Found ${elementsWithAria.length} elements with ARIA attributes`);
+    console.warn(`  🏷️ Found ${elementsWithAria.length} elements with ARIA attributes`);
   }
 
   /**
@@ -222,7 +252,7 @@ export class DevTools {
       links: document.querySelectorAll('a').length,
     };
 
-    console.log('📊 Performance Report:', report);
+    console.warn('📊 Performance Report:', report);
 
     // Also store in localStorage for later analysis
     localStorage.setItem('dev-performance-report', JSON.stringify(report));
@@ -273,7 +303,7 @@ export class DevTools {
         const avgDuration = requests.reduce((sum, req) => sum + req.duration, 0) / requests.length;
         const errors = requests.filter(req => !req.status || req.status >= 400).length;
 
-        console.log(`🌐 Network: ${requests.length} requests, ${avgDuration.toFixed(0)}ms avg, ${errors} errors`);
+        console.warn(`🌐 Network: ${requests.length} requests, ${avgDuration.toFixed(0)}ms avg, ${errors} errors`);
 
         // Keep only last 50 requests
         if (requests.length > 50) {
@@ -283,7 +313,7 @@ export class DevTools {
     }, 10000);
 
     // Make network data available globally
-    (window as any).DEV_NETWORK = {
+    window.DEV_NETWORK = {
       getRequests: () => [...requests],
       clear: () => requests.length = 0,
     };
@@ -295,7 +325,7 @@ export class DevTools {
   static initialize(): void {
     if (!this.isDevelopment) return;
 
-    console.log('🛠️ Initializing Development Tools...');
+    console.warn('🛠️ Initializing Development Tools...');
 
     // Auto-log performance after page load
     setTimeout(() => {
@@ -312,12 +342,12 @@ export class DevTools {
     // Add keyboard shortcuts
     this.setupKeyboardShortcuts();
 
-    console.log('✅ Development Tools initialized');
-    console.log('🎮 Keyboard shortcuts:');
-    console.log('  Ctrl+Shift+P: Performance Report');
-    console.log('  Ctrl+Shift+T: Theme Debug');
-    console.log('  Ctrl+Shift+A: Accessibility Check');
-    console.log('  Ctrl+Shift+B: Bundle Analysis');
+    console.warn('✅ Development Tools initialized');
+    console.warn('🎮 Keyboard shortcuts:');
+    console.warn('  Ctrl+Shift+P: Performance Report');
+    console.warn('  Ctrl+Shift+T: Theme Debug');
+    console.warn('  Ctrl+Shift+A: Accessibility Check');
+    console.warn('  Ctrl+Shift+B: Bundle Analysis');
   }
 
   /**

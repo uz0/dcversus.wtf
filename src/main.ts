@@ -44,7 +44,7 @@ class DCVSApp {
 
     // Mark as loaded
     this.state.isLoaded = true;
-    console.log('🚀 DCVS App Initialized Successfully');
+    console.warn('🚀 DCVS App Initialized Successfully');
   }
 
   private setupEventListeners(): void {
@@ -104,8 +104,6 @@ class DCVSApp {
     const href = link.getAttribute('href');
 
     if (href && href.startsWith('#')) {
-      const targetId = href.substring(1);
-
       // Close mobile menu if open
       if (this.state.isMobileMenuOpen) {
         this.toggleMobileMenu();
@@ -297,7 +295,17 @@ document.addEventListener('DOMContentLoaded', () => {
 export default DCVSApp;
 
 // Utility functions for global access
-(window as any).DCVS = {
+declare global {
+  interface Window {
+    DCVS: {
+      scrollTo: (selector: string) => void;
+      toggle: (elementId: string) => void;
+      setLoading: (button: HTMLButtonElement, loading?: boolean) => void;
+    };
+  }
+}
+
+window.DCVS = {
   scrollTo: (selector: string) => {
     scrollToElement(selector, -100);
   },
