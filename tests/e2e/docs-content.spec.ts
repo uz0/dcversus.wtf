@@ -3,22 +3,21 @@
  */
 
 import { test, expect } from '@playwright/test';
-import { execSync } from 'child_process';
-import path from 'path';
+import { readFileSync } from 'fs';
+import { join } from 'path';
 
 test.describe('Documentation Content Tests', () => {
   test.beforeAll(async () => {
-    // Ensure the project is built before tests
-    execSync('npm run build', { stdio: 'inherit' });
+    // Build is already done in CI, skip for now to avoid conflicts
   });
 
   test('should render the main consulting page correctly', async ({ page }) => {
     // Get the absolute path to the docs directory
-    const docsPath = path.resolve(__dirname, '../../docs');
-    const indexPath = path.join(docsPath, 'index.html');
+    const docsPath = join(__dirname, '../../docs');
+    const indexPath = join(docsPath, 'index.html');
 
     // Load the actual docs/index.html file
-    const htmlContent = require('fs').readFileSync(indexPath, 'utf8');
+    const htmlContent = readFileSync(indexPath, 'utf8');
 
     // Set the page content
     await page.setContent(htmlContent);
@@ -56,9 +55,9 @@ test.describe('Documentation Content Tests', () => {
   });
 
   test('should have proper page metadata', async ({ page }) => {
-    const docsPath = path.resolve(__dirname, '../../docs');
-    const indexPath = path.join(docsPath, 'index.html');
-    const htmlContent = require('fs').readFileSync(indexPath, 'utf8');
+    const docsPath = join(__dirname, '../../docs');
+    const indexPath = join(docsPath, 'index.html');
+    const htmlContent = readFileSync(indexPath, 'utf8');
 
     await page.setContent(htmlContent);
 
@@ -75,9 +74,9 @@ test.describe('Documentation Content Tests', () => {
   });
 
   test('should verify JavaScript functionality', async ({ page }) => {
-    const docsPath = path.resolve(__dirname, '../../docs');
-    const indexPath = path.join(docsPath, 'index.html');
-    const htmlContent = require('fs').readFileSync(indexPath, 'utf8');
+    const docsPath = join(__dirname, '../../docs');
+    const indexPath = join(docsPath, 'index.html');
+    const htmlContent = readFileSync(indexPath, 'utf8');
 
     // Capture console messages
     const consoleMessages: string[] = [];
@@ -93,9 +92,9 @@ test.describe('Documentation Content Tests', () => {
   });
 
   test('should have responsive design elements', async ({ page }) => {
-    const docsPath = path.resolve(__dirname, '../../docs');
-    const indexPath = path.join(docsPath, 'index.html');
-    const htmlContent = require('fs').readFileSync(indexPath, 'utf8');
+    const docsPath = join(__dirname, '../../docs');
+    const indexPath = join(docsPath, 'index.html');
+    const htmlContent = readFileSync(indexPath, 'utf8');
 
     await page.setContent(htmlContent);
 
@@ -109,9 +108,9 @@ test.describe('Documentation Content Tests', () => {
   });
 
   test('should match visual baseline on desktop', async ({ page }) => {
-    const docsPath = path.resolve(__dirname, '../../docs');
-    const indexPath = path.join(docsPath, 'index.html');
-    const htmlContent = require('fs').readFileSync(indexPath, 'utf8');
+    const docsPath = join(__dirname, '../../docs');
+    const indexPath = join(docsPath, 'index.html');
+    const htmlContent = readFileSync(indexPath, 'utf8');
 
     await page.setContent(htmlContent);
     await page.waitForLoadState('networkidle');
@@ -133,9 +132,9 @@ test.describe('Documentation Content Tests', () => {
   });
 
   test('should match visual baseline on mobile', async ({ page }) => {
-    const docsPath = path.resolve(__dirname, '../../docs');
-    const indexPath = path.join(docsPath, 'index.html');
-    const htmlContent = require('fs').readFileSync(indexPath, 'utf8');
+    const docsPath = join(__dirname, '../../docs');
+    const indexPath = join(docsPath, 'index.html');
+    const htmlContent = readFileSync(indexPath, 'utf8');
 
     await page.setContent(htmlContent);
     await page.waitForLoadState('networkidle');

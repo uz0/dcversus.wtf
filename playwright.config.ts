@@ -20,7 +20,9 @@ export default defineConfig({
       use: { ...devices['Desktop Chrome'] },
     },
   ],
-  // Avoid conflicts with Vitest
+  // Prevent global setup conflicts
   globalSetup: undefined,
   globalTeardown: undefined,
+  // Isolate test runner to avoid conflicts with Vitest
+  testIgnore: ['**/node_modules/**'],
 });
