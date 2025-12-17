@@ -32,7 +32,6 @@
     "@vitejs/plugin-legacy": "^5.4.1",
     "@vitest/ui": "^4.0.16",
     "chalk": "^5.3.0",
-    "crypto": "^1.0.1",
     "eslint": "^9.37.0",
     "execa": "^9.5.1",
     "fs-extra": "^11.2.0",
