@@ -5,14 +5,14 @@
  * initialization, state management, and public API methods.
  */
 
-import { describe, it, expect, jest, beforeEach, afterEach } from '@playwright/test';
+import { test, expect } from '@playwright/test';
 import { mockElement } from './setup';
 
-describe('DCVSApp', () => {
+test.describe('DCVSApp', () => {
   let mockDocument: any;
   let mockWindow: any;
 
-  beforeEach(() => {
+  test.beforeEach(() => {
     // Mock document methods
     mockDocument = {
       getElementById: jest.fn(),

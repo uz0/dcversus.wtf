@@ -87,3 +87,19 @@ Desktop.ini
 src/**/*.js
 src/**/*.js.map
 src/**/*.d.ts
+
+# test results
+/test-results
+/test-results.json
+/test-results-junit.xml
+/test-results-junit.xml
+/playwright-report
+/playwright-report.html
+
+# playwright
+/.playwright
+/.browser-management
+
+# unused files from development
+/docs-site
+*.orig
