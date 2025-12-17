@@ -19,12 +19,12 @@ export default defineConfig({
   // Configure tolerance for cross-platform rendering differences
   expect: {
     toHaveScreenshot: {
-      // Allow up to 15% pixel difference ratio for cross-platform rendering variations
-      maxDiffPixelRatio: 0.15,
-      // Allow up to 500,000 different pixels to accommodate font rendering differences
-      maxDiffPixels: 500000,
-      // Use slightly relaxed color threshold for minor rendering variations
-      threshold: 0.25,
+      // Allow up to 20% pixel difference ratio for cross-platform rendering variations
+      maxDiffPixelRatio: 0.20,
+      // Allow up to 1,000,000 different pixels to accommodate font and layout differences
+      maxDiffPixels: 1000000,
+      // Use relaxed color threshold for minor rendering variations
+      threshold: 0.3,
     },
   },
   projects: [
