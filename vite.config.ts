@@ -3,7 +3,11 @@ import liveReload from 'vite-plugin-live-reload';
 import legacy from '@vitejs/plugin-legacy';
 import tailwindcss from '@tailwindcss/vite';
 import { resolve } from 'path';
-import { generateHash } from './src/utils/helpers';
+import crypto from 'crypto';
+
+function generateHash(content: string): string {
+  return crypto.createHash('sha256').update(content).digest('hex').substring(0, 8);
+}
 
 export default defineConfig({
   plugins: [
@@ -67,12 +71,10 @@ export default defineConfig({
       '@': resolve(__dirname, 'src'),
       '@/components': resolve(__dirname, 'src/components'),
       '@/utils': resolve(__dirname, 'src/utils'),
-      '@/types': resolve(__dirname, 'src/types'),
-      '@/scripts': resolve(__dirname, 'scripts')
+      '@/types': resolve(__dirname, 'src/types')
     }
   },
 
-  // TypeScript configuration for Vite
   esbuild: {
     target: 'es2020'
   }

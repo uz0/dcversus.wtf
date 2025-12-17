@@ -26,38 +26,127 @@ class BuildScript {
 
   async execute(): Promise<BuildOutput> {
     const startTime = Date.now();
-    this.logger.log('Starting build process...');
+    this.logger.log('🚀 Starting build process...');
+
+    const buildSteps = [
+      { name: 'Type checking', fn: () => this.runTypeCheck(), condition: () => !this.options.skipTypeCheck },
+      { name: 'Linting', fn: () => this.runLinting(), condition: () => !this.options.skipLint },
+      { name: 'Vite build', fn: () => this.runViteBuild() },
+      { name: 'HTML update', fn: (result: any) => this.updateIndexHtml(result) },
+      { name: 'Generate manifest', fn: (result: any) => this.generateManifest(result) },
+      { name: 'Update package.json', fn: (result: any) => this.updatePackageJson(result) },
+    ];
+
+    let lastResult: any;
 
     try {
-      // Step 1: Type checking
-      if (!this.options.skipTypeCheck) {
-        await this.runTypeCheck();
+      for (let i = 0; i < buildSteps.length; i++) {
+        const step = buildSteps[i];
+
+        if (step.condition && !step.condition()) {
+          this.logger.debug(`⏭️  Skipping ${step.name}`);
+          continue;
+        }
+
+        this.logger.step(i + 1, buildSteps.length, step.name);
+
+        try {
+          if (step.name === 'HTML update' || step.name === 'Generate manifest' || step.name === 'Update package.json') {
+            lastResult = await step.fn(lastResult);
+          } else {
+            lastResult = await step.fn();
+          }
+          this.logger.debug(`✅ ${step.name} completed successfully`);
+        } catch (stepError) {
+          const error = stepError as Error;
+          this.logger.error(`❌ ${step.name} failed:`, error.message);
+
+          // Provide specific error recovery suggestions
+          this.provideErrorSuggestions(step.name, error);
+
+          throw new Error(`Build failed at ${step.name}: ${error.message}`);
+        }
       }
-
-      // Step 2: Linting
-      if (!this.options.skipLint) {
-        await this.runLinting();
-      }
-
-      // Step 3: Vite build
-      const buildResult = await this.runViteBuild();
-
-      // Step 4: Update index.html with hashed JS
-      await this.updateIndexHtml(buildResult);
-
-      // Step 5: Generate build manifest
-      const manifest = await this.generateManifest(buildResult);
-
-      // Step 6: Update package.json if needed
-      await this.updatePackageJson(manifest);
 
       const duration = Date.now() - startTime;
-      this.logger.success(`Build completed in ${duration}ms`);
+      this.logger.success(`🎉 Build completed successfully in ${duration}ms`);
+      this.logger.log(`📊 Build statistics:`, {
+        duration: `${duration}ms`,
+        files: lastResult?.files?.length || 0,
+        version: lastResult?.version || 'unknown',
+        hash: lastResult?.hash || 'unknown',
+      });
 
-      return manifest;
+      return lastResult;
     } catch (error) {
-      this.logger.error('Build failed:', error);
+      const duration = Date.now() - startTime;
+      this.logger.error(`💥 Build failed after ${duration}ms:`, error);
+      await this.cleanupOnFailure();
       throw error;
+    }
+  }
+
+  private provideErrorSuggestions(stepName: string, error: Error): void {
+    const suggestions: Record<string, string[]> = {
+      'Type checking': [
+        'Run `npm install` to install missing dependencies',
+        'Check TypeScript configuration in tsconfig.json',
+        'Verify all imports and type definitions are correct',
+        'Run `npm run type-check:scripts` to check script files separately',
+      ],
+      'Linting': [
+        'Run `npm run lint --fix` to auto-fix linting issues',
+        'Check .eslintrc.json configuration',
+        'Verify code follows ESLint rules',
+      ],
+      'Vite build': [
+        'Check vite.config.ts configuration',
+        'Verify all file paths and imports are correct',
+        'Ensure Tailwind CSS is properly configured',
+        'Check for missing or corrupted node_modules',
+      ],
+      'HTML update': [
+        'Verify docs/index.html exists and is writable',
+        'Check if Tailwind config duplication needs to be removed',
+        'Ensure all script references are correct',
+      ],
+    };
+
+    const stepSuggestions = suggestions[stepName] || [
+      'Check error message for specific details',
+      'Verify file permissions and paths',
+      'Ensure all dependencies are installed',
+    ];
+
+    this.logger.log(`💡 Suggestions for ${stepName}:`);
+    stepSuggestions.forEach((suggestion, index) => {
+      this.logger.log(`   ${index + 1}. ${suggestion}`);
+    });
+  }
+
+  private async cleanupOnFailure(): Promise<void> {
+    this.logger.log('🧹 Cleaning up after build failure...');
+
+    // Clean up any temporary files created during build
+    const tempFiles = [
+      'docs/manifest.json',
+      'dist',
+      'node_modules/.cache',
+    ];
+
+    for (const file of tempFiles) {
+      if (require('fs').existsSync(file)) {
+        try {
+          if (file.includes('dist') || file.includes('cache')) {
+            require('child_process').execSync(`rm -rf ${file}`, { stdio: 'ignore' });
+          } else {
+            require('fs').unlinkSync(file);
+          }
+          this.logger.debug(`Cleaned up: ${file}`);
+        } catch (error) {
+          this.logger.debug(`Failed to clean up ${file}:`, error);
+        }
+      }
     }
   }
 
