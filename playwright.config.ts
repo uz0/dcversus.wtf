@@ -18,11 +18,12 @@ export default defineConfig({
     {
       name: 'chromium',
       use: { ...devices['Desktop Chrome'] },
+      testMatch: '**/e2e/**/*.spec.ts',
     },
   ],
   // Prevent global setup conflicts
   globalSetup: undefined,
   globalTeardown: undefined,
   // Isolate test runner to avoid conflicts with Vitest
-  testIgnore: ['**/node_modules/**'],
-});
+  testIgnore: ['**/node_modules/**', '**/unit/**/*.test.ts'],
+  });

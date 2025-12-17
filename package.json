@@ -14,7 +14,7 @@
     "test:unit": "vitest run",
     "test:unit:ui": "vitest --ui",
     "test:unit:coverage": "vitest --coverage",
-    "test:e2e": "node scripts/run-playwright.js",
+    "test:e2e": "NODE_ENV=test-playwright VITEST_DISABLE_GLOBALS=true npx playwright test --project=chromium",
     "test:e2e:install": "playwright install",
     "test:e2e:report": "playwright show-report"
   },
