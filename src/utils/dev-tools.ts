@@ -31,7 +31,7 @@ export class DevTools {
       // Navigation timing
       domContentLoaded: navigation.domContentLoadedEventEnd - navigation.domContentLoadedEventStart,
       loadComplete: navigation.loadEventEnd - navigation.loadEventStart,
-      totalTime: navigation.loadEventEnd - navigation.navigationStart,
+      totalTime: navigation.loadEventEnd - (navigation as any).navigationStart,
 
       // Resource timing
       resources: performance.getEntriesByType('resource').length,
@@ -61,7 +61,8 @@ export class DevTools {
     // First Input Delay
     new PerformanceObserver((list) => {
       const entries = list.getEntries();
-      const fid = entries[0].processingStart - entries[0].startTime;
+      const firstEntry = entries[0] as any;
+      const fid = firstEntry.processingStart - firstEntry.startTime;
       console.log(`⚡ FID: ${Math.round(fid)}ms`);
     }).observe({ entryTypes: ['first-input'] });
 

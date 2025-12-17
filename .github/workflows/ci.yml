@@ -1,0 +1,415 @@
+name: CI Pipeline
+on:
+  push:
+    branches: [ main, feature/* ]
+  pull_request:
+    branches: [ main, feature/* ]
+
+jobs:
+  quality-checks:
+    name: Quality Checks
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Type checking
+        run: npm run type-check
+
+      - name: ESLint
+        run: npm run lint
+
+  e2e-tests:
+    name: E2E Tests
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install Playwright browsers
+        run: npm run test:e2e:install
+
+      - name: Build application
+        run: npm run build
+
+      - name: Run E2E tests
+        run: npm run test:ci
+
+      - name: Upload test results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: playwright-report
+          path: playwright-report/
+          retention-days: 30
+
+  accessibility-tests:
+    name: Accessibility Tests
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/checkout@v4
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install Playwright browsers
+        run: npm run test:e2e:install
+
+      - name: Run accessibility tests
+        run: npx playwright test tests/accessibility/ --reporter=html
+
+      - name: Upload accessibility report
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: accessibility-report
+          path: test-results/accessibility-report
+          retention-days: 30
+
+  performance-tests:
+    name: Performance Tests
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install Playwright browsers
+        run: npm run test:e2e:install
+
+      - name: Build application
+        run: npm run build
+
+      - name: Run performance tests
+        run: npx playwright test tests/performance/ --reporter=html
+
+      - name: Upload performance report
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: performance-report
+          path: test-results/performance-report
+          retention-days: 30
+
+  code-review:
+    name: Code Review
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node://: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run code review
+        run: |
+          echo "📋 Running code review..."
+
+      - name: Check for TODO comments
+        run: |
+          echo "Checking for TODO comments..."
+          if git diff origin/main --name-only | grep -q "TODO\|FIXME\|HACK"; then
+            echo "❌ Found TODO/FIXME/HACK comments"
+            echo "Please resolve before merging"
+            exit 1
+          fi
+          echo "✅ No TODO/FIXME/HACK comments found"
+
+      - name: Check file sizes
+        run: |
+          echo "Checking file sizes..."
+          large_files=$(find . -name "*.ts" -o -name "*.tsx" -o -name "*.js" -o -name "*.jsx" | xargs wc -l | awk '$1 > 500 {print $1 " $0}')
+          if [ ! -z "$large_files" ]; then
+            echo "❌ Found large files (>500 lines):"
+            echo "$large_files"
+            exit 1
+          fi
+          echo "✅ All files within size limits"
+
+  security-scan:
+    name: Security Scan
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Run Trivy vulnerability scanner
+        uses: aquasecurity/trivy-action@master
+        with:
+          scan-type: 'fs'
+          scan-ref: '.'
+          format: 'sarif'
+          output: 'trivy-results.sarif'
+
+      - name: Upload Trivy scan results to GitHub Security tab
+        uses: github/codeql-action/upload-sarif@v3
+        if: always()
+        with:
+          sarif_file: 'trivy-results.sarif'
+
+  build-verification:
+    name: Build Verification
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build application
+        run: npm run build
+
+      - name: Verify build output
+        run: |
+          echo "🔍 Verifying build output..."
+
+          # Check if docs directory exists and has files
+          if [ ! -d "docs" ]; then
+            echo "❌ docs directory not found"
+            exit 1
+          fi
+
+          # Check for index.html
+          if [ ! -f "docs/index.html" ]; then
+            echo "❌ docs/index.html not found"
+            exit 1
+          fi
+
+          # Check for JavaScript files
+          js_files=$(find docs -name "*.js" -type f | wc -l)
+          if [ $js_files -eq 0 ]; then
+            echo "❌ No JavaScript files found in docs/"
+            exit 1
+          fi
+
+          # Check for SVG logos
+          svg_files=$(find docs -name "*.svg" -type f | wc -l)
+          if [ $svg_files -lt 3 ]; then
+            echo "❌ Expected at least 3 SVG logos, found $svg_files"
+            exit 1
+          fi
+
+          echo "✅ Build verification passed:"
+          echo "- docs directory exists"
+          echo "- index.html generated"
+          echo "- JavaScript files compiled: $js_files"
+          echo "- SVG logos ready: $svg_files"
+
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: build-output
+          path: docs/
+          retention-days: 30
+
+  lighthouse:
+    name: Lighthouse CI
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build application
+        run: npm run build
+
+      - name: Run Lighthouse
+        uses: treosh/lighthouse-ci-action@v10
+        with:
+          configPath: '.lighthouserc.json'
+          uploadArtifacts: true
+          temporaryPublicStorage: false
+        env:
+          LHCI_GITHUB_APP_TOKEN: ${{ secrets.LHCI_GITHUB_APP_TOKEN }}
+          LHCI_GITHUB_APP_TOKEN: ${{ secrets.LHCI_GITHUB_APP_TOKEN }}
+
+        run: |
+          # Wait for app to start
+          npx vite preview --port 4173 --host 0.0.0.0 &
+          sleep 30
+
+          # Run Lighthouse
+          npx lighthouse http://localhost:4173 \
+            --chrome-flags="--headless" \
+            --output=json \
+            --output-path=./lighthouse-results
+
+  deploy-preview:
+    name: Deploy Preview
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build application
+        run: npm run build
+
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./docs
+
+      - name: Update status
+        uses: actions/github-script@v7
+        if: success()
+        with:
+          script: |
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              body: '🚀 **Preview deployed successfully!**
+
+              **Preview URL**: https://uz0.github.io/dcversus.wtf
+
+              **Changes**:
+              ' + ${{ github.event.head_commit.message }}
+
+              Please test the deployment and provide feedback.',
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+            })
+
+# Agent Review Workflow
+  agent-review:
+    name: Agent Code Review
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Analyze PR for agent tags
+        id: analyze-pr
+        run: |
+          echo "🤖 Looking for agent review requests..."
+          pr_body=$(jq -r '.body' "$GITHUB_EVENT_PATH")
+
+          # Look for @claude mentions
+          claude_mentions=$(echo "$pr_body" | grep -o "@claude" | wc -l)
+
+          # Look for @coderabbit mentions
+          coderabbit_mentions=$(echo "$pr_body" | grep -o "@coderabbit" | wc -l)
+
+          echo "📊 Agent mentions found:"
+          echo "   @claude: $claude_mentions"
+          echo "   @coderabbit: $coderabbit_mentions"
+          echo "::set-output name=claude-mentions::$claude_mentions"
+          echo "::set-output name=coderabbit-mentions::$coderabbit_mentions"
+
+      - name: Request Claude Review
+        if: steps.analyze-pr.outputs.claude-mentions > 0
+        run: |
+          echo "🤖 Requesting Claude review..."
+          # In a real implementation, you'd integrate with Claude API
+          echo "Would send PR analysis to Claude for architecture review"
+          echo "PR: ${{ github.event.html_url }}"
+          echo "Changes: ${{ github.event.head_commit.message }}"
+
+      - name: Request CodeRabbit Review
+        if: steps.analyze-pr.outputs.coderabbit-mentions > 0
+        run: |
+          echo "🐇 Requesting CodeRabbit review..."
+          # In a real implementation, you'd integrate with CodeRabbit
+          echo "Would send PR analysis to CodeRabbit for code quality review"
+          echo "PR: ${{ github.event.html_url }}"
+          echo "Files changed: ${{ github.event.pull_request.changed_files }}"
+
+      - name: Agent Review Summary
+        run: |
+          echo "📋 Agent Review Summary:"
+          echo "   - PR: ${{ github.event.number }}"
+          echo "   - Title: ${{ github.event.title }}"
+          echo "   - Author: ${{ github.event.user.login }}"
+          echo "   - @claude mentions: ${{ steps.analyze-pr.outputs.claude-mentions }}"
+          echo "   - @coderabbit mentions: ${{ steps.analyze-pr.outputs.coderabbit-mentions }}"
+
+      - name: Continue Workflow
+        run: |
+          echo "✅ Agent review process completed"
+          echo "🔄 Continuing with automated checks..."

@@ -1,394 +1,220 @@
-# DCVS - Professional Consulting Landing Page
+# DCVS: Cutting-Edge Web Development Environment
 
-A modern, TypeScript-powered landing page with automated deployment, shadcn/ui inspired design system, and brand-compliant color palette.
+DCVS is the premier development environment for building modern web applications with confidence, speed, and agent-collaborated quality. Built with ❤️ and cutting-edge web technologies for exceptional developer experience.
 
-## 🎨 Brand Colors
+## 🌟 Live Demo
 
-Our design system is built around three primary brand colors extracted from our logos:
-
-- **Orange**: `#FF6700` - Primary action color
-- **Purple**: `#6A0DAD` - Secondary accent color
-- **Yellow**: `#FFC107` - Warning/highlight color
-
-All gray variations and semantic colors are derived from this base palette to ensure brand consistency.
+**Website**: [dcversus.wtf](https://dcversus.wtf) • **Preview**: [GitHub Pages](https://uz0.github.io/dcversus.wtf)
 
 ## 🚀 Quick Start
 
 ### Prerequisites
 
-- Node.js 18+ or Bun 1.0+
-- Git
-- GitHub CLI (gh) - for deployment automation
+- **Node.js** 18+ or **Bun** 1.0+
+- **Git**
+- **GitHub CLI (gh)** - for deployment automation
 
-### Development Setup
+### Setup
 
 ```bash
-# Clone the repository
-git clone https://github.com/dcversus/dcversus.wtf.git
+# Clone and setup
+git clone https://github.com/uz0/dcversus.wtf
 cd dcversus.wtf
 
 # Install dependencies
-bun install  # or: npm install
-
-# Start development server with HMR
-bun run dev  # or: npm run dev
-```
-
-### Available Scripts
-
-- `bun run dev` - Start development server with hot module replacement
-- `bun run build` - Build TypeScript project and generate hashed assets
-- `bun run deploy` - Build, version, and deploy to GitHub Pages with release
-- `bun run type-check` - TypeScript type checking
-- `bun run lint` - ESLint code linting
-- `bun run format` - Prettier code formatting
-- `bun run changelog` - Interactive CHANGELOG management
-- `bun run start` - Preview production build
-- `bun run preview` - Alternative preview command
-
-## 📁 Project Structure
-
-```
-dcversus.wtf/
-├── docs/                   # GitHub Pages deployment directory
-│   ├── index.html         # Main landing page (generated)
-│   ├── js/                # JavaScript files (hashed)
-│   ├── dcversus.svg       # Logo 1 (orange)
-│   ├── theedgestory.svg   # Logo 2 (purple)
-│   └── uz0.svg           # Logo 3 (yellow)
-├── src/                   # TypeScript development source
-│   ├── main.ts           # Main application entry point
-│   ├── types/            # TypeScript type definitions
-│   ├── utils/            # Utility functions and helpers
-│   └── components/       # React/Vue components (future)
-├── scripts/               # TypeScript automation scripts
-│   ├── build.mts         # Build automation
-│   ├── deploy.mts        # Deployment automation
-│   ├── changelog.mts     # CHANGELOG management
-│   ├── postbuild.mts     # Post-build tasks
-│   ├── types.ts          # Script type definitions
-│   └── utils.ts          # Script utilities
-├── package.json           # Dependencies and scripts
-├── vite.config.ts         # Vite TypeScript configuration
-├── tsconfig.json          # TypeScript configuration
-├── tailwind.config.js     # Tailwind CSS configuration
-├── .eslintrc.json         # ESLint configuration
-├── .prettierrc            # Prettier configuration
-├── CHANGELOG.md           # Version changelog
-└── README.md             # This file
-```
-
-## 🔄 Development Workflow
-
-### 1. Development Mode
-```bash
-# Start development with HMR
-bun run dev
-
-# Type checking in parallel
-bun run type-check
-
-# Linting and formatting
-bun run lint
-bun run format
-```
-
-### 2. Building
-```bash
-# Full TypeScript build with hashed assets
-bun run build
-
-# This automatically:
-# - Compiles TypeScript
-# - Runs linting
-# - Builds with Vite
-# - Updates index.html with hashed JS
-# - Generates build manifest
-# - Updates CHANGELOG
-# - Optimizes assets
-```
-
-### 3. Deployment
-```bash
-# Automated deployment with versioning and releases
-bun run deploy
-
-# This automatically:
-# - Validates environment
-# - Updates version (patch/minor/major)
-# - Builds project
-# - Updates CHANGELOG
-# - Creates commit and tag
-# - Pushes to GitHub
-# - Creates GitHub release
-# - Manages pull requests
-
-# Deployment options
-bun run deploy --patch          # Patch release (default)
-bun run deploy --minor          # Minor release
-bun run deploy --major          # Major release
-bun run deploy --version 2.1.0  # Custom version
-bun run deploy --dry-run        # Dry run mode
-```
-
-## 🛠️ Technology Stack
-
-### Core Technologies
-- **TypeScript 5.6+**: Type-safe development
-- **Vite 5.4+**: Fast build tool and dev server
-- **Tailwind CSS 4.0**: Utility-first CSS framework
-- **Bun 1.1+**: Fast package manager and runtime
-
-### Development Tools
-- **ESLint**: Code linting and quality
-- **Prettier**: Code formatting
-- **TypeScript**: Static type checking
-- **Hot Module Replacement**: Instant development feedback
-- **Source Maps**: Easy debugging
-
-### Automation & Deployment
-- **GitHub CLI**: Release and PR automation
-- **SemVer**: Semantic versioning
-- **Automated Changelog**: Git-based change tracking
-- **Hashed Assets**: Cache-busting for production
-- **GitHub Pages**: Static hosting
-
-### UI Framework
-- **shadcn/ui Inspired**: Modern, accessible components
-- **Brand Compliant**: Custom color palette with TypeScript types
-- **Responsive First**: Mobile-first design approach
-- **Type Safety**: Full TypeScript coverage
-
-## 🌐 Deployment
-
-This project uses **automated deployment** with comprehensive versioning and release management:
-
-### Automated Deployment Process
-1. **Environment Validation**: Checks git status, dependencies, and GitHub CLI
-2. **Version Management**: Semantic versioning with changelog updates
-3. **Build Process**: TypeScript compilation with hashed assets
-4. **Git Operations**: Automated commits, tags, and pushes
-5. **GitHub Integration**: Release creation and PR management
-
-### Deployment Commands
-```bash
-# Interactive deployment (recommended)
-bun run deploy
-
-# Automated deployment options
-bun run deploy --patch          # Bug fixes
-bun run deploy --minor          # New features
-bun run deploy --major          # Breaking changes
-bun run deploy --version 2.1.0  # Custom version
-bun run deploy --dry-run        # Test without deploying
-```
-
-### Manual Build
-```bash
-# Build only (no deployment)
-bun run build
-
-# Build results in docs/ directory
-# Files are automatically hashed for cache-busting
-```
-
-## 📝 Development Guidelines
-
-### TypeScript Best Practices
-- Use strict mode and proper type definitions
-- Leverage utility types and generics
-- Follow the established type patterns in `/src/types`
-- Use proper error handling with typed exceptions
-
-### Code Quality
-- All TypeScript files must pass type checking
-- Use ESLint for code quality and consistency
-- Format with Prettier for consistent style
-- Write descriptive commit messages
-- All functionality must have E2E test coverage
-
-### Testing
-- Run full E2E test suite: `npm test`
-- Run tests with UI: `npm run test:e2e:ui`
-- Debug tests: `npm run test:e2e:debug`
-- View test reports: `npm run test:e2e:report`
-- Run CI tests: `npm run test:ci`
-
-### Brand Guidelines
-- Use the TypeScript color utilities from `/src/utils/theme.ts`
-- Maintain brand consistency across all components
-- Follow the established responsive breakpoints
-- Ensure accessibility with proper ARIA labels
-
-## 🎯 Design System (TypeScript-Powered)
-
-### Type-Safe Colors
-```typescript
-import { BRAND_COLORS, THEME_CONFIG } from '@/utils/theme';
-
-// Brand colors with type safety
-const primaryColor = BRAND_COLORS.orange; // #FF6700
-const accentColor = THEME_CONFIG.colors.accent[500]; // #6A0DAD
-```
-
-### Responsive Breakpoints
-```typescript
-// Built into the theme system
-breakpoints: {
-  sm: '640px',   // Mobile
-  md: '768px',   // Tablet
-  lg: '1024px',  // Desktop
-  xl: '1280px',  // Large desktop
-}
-```
-
-### Component Patterns
-- Use TypeScript interfaces for props
-- Leverage utility types for common patterns
-- Follow the existing utility functions in `/src/utils`
-- Maintain consistent naming conventions
-
-## 🚀 Automation Features
-
-### Build Automation
-- **Hashed Assets**: Automatic cache-busting with SHA hashes
-- **Manifest Generation**: Build metadata and file tracking
-- **Asset Optimization**: SVG optimization and compression
-- **Documentation Updates**: Automatic README and changelog updates
-
-### Deployment Automation
-- **Version Bumping**: Semantic versioning with validation
-- **Git Integration**: Automated commits, tags, and pushes
-- **GitHub Releases**: Automatic release creation with notes
-- **PR Management**: Automated pull request creation and merging
-
-### Quality Assurance
-- **Type Checking**: Comprehensive TypeScript validation
-- **Linting**: Code quality and consistency checks
-- **Build Validation**: Artifact verification and size reporting
-- **Error Handling**: Robust error reporting and recovery
-- **E2E Testing**: Complete behavioral test coverage with Playwright
-
-## 🧪 Testing Infrastructure
-
-### E2E Testing with Playwright
-Our comprehensive test suite covers all aspects of the application:
-
-#### Test Coverage Areas
-- **Application Tests**: Main functionality, navigation, user interactions
-- **Theme System Tests**: Brand colors, responsive design, animations
-- **Build System Tests**: Asset hashing, optimization, TypeScript compilation
-- **Accessibility Tests**: WCAG compliance, screen readers, keyboard navigation
-- **Performance Tests**: Core Web Vitals, loading speed, memory usage
-
-#### Test Commands
-```bash
-# Run all tests
-npm test
-
-# Run with visual interface
-npm run test:e2e:ui
-
-# Debug tests step-by-step
-npm run test:e2e:debug
-
-# Generate HTML report
-npm run test:e2e:report
+bun install
 
 # Install Playwright browsers
 npm run test:e2e:install
 
-# Full CI pipeline (build + test)
-npm run test:ci
+# Start development server
+npm run dev
 ```
 
-#### Browser Testing
-- **Chrome**: Chromium-based browsers
-- **Firefox**: Mozilla Firefox
-- **Safari**: WebKit-based browsers
-- **Mobile**: iPhone, iPad, Android viewports
+**Instant Setup**: One-command setup with all dependencies and development tools configured out of the box.
 
-#### Performance Testing
-- **Core Web Vitals**: LCP, FID, CLS metrics
-- **Loading Performance**: Resource optimization, caching
-- **Memory Usage**: Leak detection and optimization
-- **Network Performance**: Request optimization, compression
+## 📋 Development Workflow
 
-#### Accessibility Testing
-- **WCAG 2.1 Compliance**: Full accessibility standards
-- **Screen Reader Support**: Proper ARIA labels and roles
-- **Keyboard Navigation**: Complete keyboard accessibility
-- **Color Contrast**: Visual accessibility compliance
+### Step 1: Feature Specification
+Create a detailed specification before implementation:
 
-## 🐛 Troubleshooting
-
-### Common Issues
-
-**TypeScript compilation errors:**
 ```bash
-# Check TypeScript configuration
-bun run type-check
-
-# Update dependencies
-bun install
+# Create feature spec
+touch specs/your-feature-name.md
 ```
 
-**Build failures:**
+Your spec must include:
+- 🎯 Objective and requirements
+- 🏗️ Implementation plan and file structure
+- 🧪 Testing strategy
+- 📝 Acceptance criteria
+- 🚀 Success metrics
+
+**Get Approval**: Tag @claude and @coderabbit for review before implementation.
+
+### Step 2: Implementation
 ```bash
-# Clean build artifacts
-rm -rf docs dist
+# Create feature branch
+git checkout -b feature/your-feature-name
+git push -u origin feature/your-feature-name
 
-# Rebuild
-bun run build
+# Develop with TypeScript strict mode
+# Follow existing code patterns
+# Test as you develop
+# Use agents for reviews and clarification
 ```
 
-**Deployment issues:**
+### Step 3: Quality Assurance
 ```bash
-# Check GitHub CLI authentication
-gh auth status
+# Full quality check
+npm run type-check && npm run lint && npm run test
 
-# Validate repository state
-git status
+# Performance validation
+npm run build && npm run test:e2e -- --grep "performance"
 ```
 
-**Development server issues:**
+### Step 4: Code Review
+Tag agents for comprehensive review:
+
+**Architecture Review (@claude):**
+```text
+@claude Please review [feature] implementation
+Focus: architecture, patterns, integration, security
+Spec: specs/your-feature-name.md
+```
+
+**Code Quality Review (@coderabbit):**
+```text
+@coderabbit Please review code quality for [feature]
+Focus: best practices, performance, optimization
+PR: #[pr-number]
+```
+
+### Step 5: Pull Request & Deployment
 ```bash
-# Clear dependencies and reinstall
-rm -rf node_modules
-bun install
+# Create PR with detailed description
+gh pr create --title "feat: [Feature Name]" --body "Follow template in .github/PULL_REQUEST_TEMPLATE.md"
+
+# Automated CI/CD will:
+# ✅ Type check, lint, and test
+# ✅ Deploy preview for testing
+# ⏳ Wait for manual approval
+# ✅ Auto-deploy when merged
 ```
 
-### Getting Help
+## 🛠️ Available Commands
 
-- Check TypeScript compiler output for detailed errors
-- Review build logs in `docs/build-report.json`
-- Use `--verbose` flag for detailed script output
-- Open an issue on GitHub with full error logs
+### Development
+```bash
+npm run dev              # Start development server with HMR
+npm run type-check       # Type check source files
+npm run type-check:scripts # Type check script files
+npm run lint            # Run ESLint
+npm run format          # Format code with Prettier
+```
 
-## 📊 Build & Deployment Metrics
+### Testing
+```bash
+npm test                # Run all E2E tests
+npm run test:e2e:ui     # Run tests with visual interface
+npm run test:e2e:debug  # Debug tests step-by-step
+npm run test:ci         # Full CI pipeline
+```
 
-### Performance Metrics
-- **Build Time**: Typically < 10 seconds
-- **Bundle Size**: Optimized with tree-shaking
-- **Type Checking**: Comprehensive coverage
-- **Asset Hashing**: Automatic cache invalidation
+### Build & Deploy
+```bash
+npm run build           # Build for production
+npm run preview         # Preview production build
+npm run deploy          # Deploy with version management
+npm run deploy --patch  # Patch release (bug fixes)
+npm run deploy --minor  # Minor release (new features)
+```
 
-### Deployment Pipeline
-- **Validation**: Environment and dependency checks
-- **Version Management**: Semantic versioning with changelog
-- **Quality Assurance**: Automated testing and linting
-- **Release Management**: GitHub integration with PR automation
+## 🏗️ Project Structure
 
-## 📄 License
+```
+dcversus.wtf/
+├── specs/              # Feature specifications
+│   ├── 01-init.md     # Development workflow
+│   └── feature-name.md # Individual feature specs
+├── src/                # TypeScript source files
+│   ├── main.ts        # Application entry point
+│   ├── types/         # Type definitions
+│   └── utils/         # Utility functions
+├── scripts/            # Build and deploy automation
+├── tests/              # Playwright E2E tests
+├── .github/workflows/  # CI/CD pipeline
+└── docs/               # Build output (GitHub Pages)
+```
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+## 🤖 Agent Collaboration
 
-## 🤝 Team
+### @claude - Architecture Specialist
+- System architecture and design patterns
+- TypeScript implementation and best practices
+- Complex problem solving and debugging
+- Performance optimization strategies
+- Security considerations and threat modeling
 
-- **DCVS Team** - Development and design
-- **The Edge Story** - Brand strategy
-- **UZ0** - Technical implementation
+### @coderabbit - Code Quality Specialist
+- Code quality assessment and best practices
+- Performance optimization and profiling
+- Test coverage and quality assessment
+- Security audit and vulnerability assessment
+- Documentation review and improvement
+
+## 🎨 PWA & Brand Features
+
+### Progressive Web App
+- **PWA Ready**: Installable as native app with offline support
+- **Favicon Generation**: Auto-generated from dcversus.svg brand logo
+- **Web Manifest**: Complete PWA configuration with icons and theme colors
+- **Mobile Optimized**: Touch icons, splash screens, and responsive design
+- **Performance**: Core Web Vitals monitoring and optimization
+
+### Brand System
+- **Consistent Branding**: TypeScript-powered design system
+- **Color Palette**: Brand colors (#FF6700, #6A0DAD, #FFC107)
+- **Responsive Components**: Mobile-first design approach
+- **Accessibility**: WCAG 2.1 compliant with proper ARIA labels
+
+## 🧪 Quality Standards
+
+- ✅ **TypeScript strict mode** with comprehensive type coverage
+- ✅ **ESLint rules compliance** (0 errors tolerance)
+- ✅ **Prettier formatting applied** for consistent style
+- ✅ **E2E tests cover all user journeys** with Playwright
+- ✅ **Cross-browser compatibility** (Chrome, Firefox, Safari)
+- ✅ **Mobile responsive testing** across all viewports
+- ✅ **Accessibility compliance** (WCAG 2.1 standards)
+- ✅ **Performance benchmarks met** (LCP < 2.5s, FID < 100ms, CLS < 0.1)
+- ✅ **Bundle size optimization** (< 1MB with tree-shaking)
+- ✅ **PWA functionality** with install capability
+
+## 🚀 Deployment Process
+
+### Automated CI/CD Pipeline
+1. **Quality Checks**: Type checking, linting, testing
+2. **Accessibility Tests**: WCAG compliance validation
+3. **Performance Tests**: Core Web Vitals monitoring
+4. **Security Scanning**: Vulnerability detection
+5. **Build Verification**: Production build validation
+6. **Preview Deployment**: Test deployment for PR review
+7. **Production Deployment**: Automated deployment on merge
+
+### Post-Deployment
+- Semantic versioning with changelog
+- GitHub release creation
+- Performance monitoring at dcversus.wtf
+- Automated rollback on issues
+
+## 📚 Documentation
+
+- **Development Workflow**: `specs/01-init.md`
+- **Contribution Guide**: `CONTRIBUTING.md`
+- **Agent Collaboration**: `AGENTS.md` (symlink to README.md)
+- **Claude Usage**: `CLAUDE.md` (symlink to README.md)
 
 ---
 
-Built with ❤️, TypeScript, and modern web technologies.
+Built with ❤️ and cutting-edge web technologies for exceptional developer experience.

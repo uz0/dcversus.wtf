@@ -1,5 +1,7 @@
-import type { NavigationItem, TrustIndicator, FeatureCard, AppState } from '@/types';
-import { debounce, throttle, isInViewport, scrollToElement, isMobileDevice } from '@/utils/helpers';
+import type { AppState } from '@/types';
+import { debounce, throttle, scrollToElement, isMobileDevice } from '@/utils/helpers';
+// import type { NavigationItem, TrustIndicator, FeatureCard } from '@/types';
+// import { isInViewport } from '@/utils/helpers';
 
 /**
  * Application main entry point
@@ -228,11 +230,11 @@ class DCVSApp {
     // Add hover effects to buttons
     document.querySelectorAll('button, .hover-lift').forEach(button => {
       button.addEventListener('mouseenter', () => {
-        button.style.transform = 'translateY(-2px)';
+        (button as HTMLElement).style.transform = 'translateY(-2px)';
       });
 
       button.addEventListener('mouseleave', () => {
-        button.style.transform = 'translateY(0)';
+        (button as HTMLElement).style.transform = 'translateY(0)';
       });
     });
 

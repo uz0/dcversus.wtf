@@ -31,6 +31,7 @@ class BuildScript {
     const buildSteps = [
       { name: 'Type checking', fn: () => this.runTypeCheck(), condition: () => !this.options.skipTypeCheck },
       { name: 'Linting', fn: () => this.runLinting(), condition: () => !this.options.skipLint },
+      { name: 'Generate favicon', fn: () => this.generateFavicon() },
       { name: 'Vite build', fn: () => this.runViteBuild() },
       { name: 'HTML update', fn: (result: any) => this.updateIndexHtml(result) },
       { name: 'Generate manifest', fn: (result: any) => this.generateManifest(result) },
@@ -162,7 +163,7 @@ class BuildScript {
   }
 
   private async runLinting(): Promise<void> {
-    this.logger.step(2, 6, 'Running ESLint...');
+    this.logger.step(2, 7, 'Running ESLint...');
 
     try {
       await execa('eslint', ['src', '--ext', '.ts'], { stdio: 'inherit' });
@@ -172,8 +173,20 @@ class BuildScript {
     }
   }
 
+  private async generateFavicon(): Promise<void> {
+    this.logger.step(3, 7, 'Generating favicon and icons...');
+
+    try {
+      await execa('npx', ['tsx', 'scripts/generate-favicon.mts'], { stdio: 'inherit' });
+      this.logger.success('Favicon and icons generated');
+    } catch (error) {
+      // Don't fail the build if favicon generation fails, just warn
+      this.logger.log('⚠️  Favicon generation failed, continuing build...');
+    }
+  }
+
   private async runViteBuild(): Promise<any> {
-    this.logger.step(3, 6, 'Running Vite build...');
+    this.logger.step(4, 7, 'Running Vite build...');
 
     try {
       const mode = this.options.mode;
@@ -193,7 +206,7 @@ class BuildScript {
   }
 
   private async updateIndexHtml(manifest: any): Promise<void> {
-    this.logger.step(4, 6, 'Updating index.html with hashed assets...');
+    this.logger.step(5, 7, 'Updating index.html with hashed assets...');
 
     const indexPath = 'docs/index.html';
     let htmlContent = FileUtils.readFile(indexPath);
@@ -285,7 +298,7 @@ class BuildScript {
   }
 
   private async generateManifest(buildResult: any): Promise<BuildOutput> {
-    this.logger.step(5, 6, 'Generating build manifest...');
+    this.logger.step(6, 7, 'Generating build manifest...');
 
     const commitHash = await retry(() => GitUtils.getCommitHash(true));
     const version = PackageUtils.getVersion();
@@ -312,7 +325,7 @@ class BuildScript {
   }
 
   private async updatePackageJson(manifest: BuildOutput): Promise<void> {
-    this.logger.step(6, 6, 'Updating package.json with build info...');
+    this.logger.step(7, 7, 'Updating package.json with build info...');
 
     const pkg = PackageUtils.readPackageJson();
 
