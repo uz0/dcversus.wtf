@@ -3,9 +3,9 @@
     "configFile": "/Users/dcversus/Documents/GitHub/dcversus.wtf/playwright.config.ts",
     "rootDir": "/Users/dcversus/Documents/GitHub/dcversus.wtf/tests",
     "forbidOnly": false,
-    "fullyParallel": true,
-    "globalSetup": "/Users/dcversus/Documents/GitHub/dcversus.wtf/tests/global-setup.ts",
-    "globalTeardown": "/Users/dcversus/Documents/GitHub/dcversus.wtf/tests/global-teardown.ts",
+    "fullyParallel": false,
+    "globalSetup": null,
+    "globalTeardown": null,
     "globalTimeout": 0,
     "grep": {},
     "grepInvert": null,
@@ -16,7 +16,8 @@
       [
         "html",
         {
-          "outputFolder": "playwright-report"
+          "outputFolder": "playwright-report",
+          "open": "never"
         }
       ],
       [
@@ -24,16 +25,6 @@
         {
           "outputFile": "test-results.json"
         }
-      ],
-      [
-        "junit",
-        {
-          "outputFile": "test-results-junit.xml"
-        }
-      ],
-      [
-        "list",
-        null
       ]
     ],
     "reportSlowTests": {
@@ -50,141 +41,11 @@
         "id": "chromium",
         "name": "chromium",
         "testDir": "/Users/dcversus/Documents/GitHub/dcversus.wtf/tests",
-        "testIgnore": [
-          "**/node_modules/**",
-          "**/dist/**",
-          "**/build/**"
-        ],
+        "testIgnore": [],
         "testMatch": [
           "**/*.@(spec|test).?(c|m)[jt]s?(x)"
         ],
-        "timeout": 60000
-      },
-      {
-        "outputDir": "/Users/dcversus/Documents/GitHub/dcversus.wtf/test-results",
-        "repeatEach": 1,
-        "retries": 0,
-        "metadata": {},
-        "id": "firefox",
-        "name": "firefox",
-        "testDir": "/Users/dcversus/Documents/GitHub/dcversus.wtf/tests",
-        "testIgnore": [
-          "**/node_modules/**",
-          "**/dist/**",
-          "**/build/**"
-        ],
-        "testMatch": [
-          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
-        ],
-        "timeout": 60000
-      },
-      {
-        "outputDir": "/Users/dcversus/Documents/GitHub/dcversus.wtf/test-results",
-        "repeatEach": 1,
-        "retries": 0,
-        "metadata": {},
-        "id": "webkit",
-        "name": "webkit",
-        "testDir": "/Users/dcversus/Documents/GitHub/dcversus.wtf/tests",
-        "testIgnore": [
-          "**/node_modules/**",
-          "**/dist/**",
-          "**/build/**"
-        ],
-        "testMatch": [
-          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
-        ],
-        "timeout": 60000
-      },
-      {
-        "outputDir": "/Users/dcversus/Documents/GitHub/dcversus.wtf/test-results",
-        "repeatEach": 1,
-        "retries": 0,
-        "metadata": {},
-        "id": "Mobile Chrome",
-        "name": "Mobile Chrome",
-        "testDir": "/Users/dcversus/Documents/GitHub/dcversus.wtf/tests",
-        "testIgnore": [
-          "**/node_modules/**",
-          "**/dist/**",
-          "**/build/**"
-        ],
-        "testMatch": [
-          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
-        ],
-        "timeout": 60000
-      },
-      {
-        "outputDir": "/Users/dcversus/Documents/GitHub/dcversus.wtf/test-results",
-        "repeatEach": 1,
-        "retries": 0,
-        "metadata": {},
-        "id": "Mobile Safari",
-        "name": "Mobile Safari",
-        "testDir": "/Users/dcversus/Documents/GitHub/dcversus.wtf/tests",
-        "testIgnore": [
-          "**/node_modules/**",
-          "**/dist/**",
-          "**/build/**"
-        ],
-        "testMatch": [
-          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
-        ],
-        "timeout": 60000
-      },
-      {
-        "outputDir": "/Users/dcversus/Documents/GitHub/dcversus.wtf/test-results",
-        "repeatEach": 1,
-        "retries": 0,
-        "metadata": {},
-        "id": "iPad Safari",
-        "name": "iPad Safari",
-        "testDir": "/Users/dcversus/Documents/GitHub/dcversus.wtf/tests",
-        "testIgnore": [
-          "**/node_modules/**",
-          "**/dist/**",
-          "**/build/**"
-        ],
-        "testMatch": [
-          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
-        ],
-        "timeout": 60000
-      },
-      {
-        "outputDir": "/Users/dcversus/Documents/GitHub/dcversus.wtf/test-results",
-        "repeatEach": 1,
-        "retries": 0,
-        "metadata": {},
-        "id": "accessibility",
-        "name": "accessibility",
-        "testDir": "/Users/dcversus/Documents/GitHub/dcversus.wtf/tests",
-        "testIgnore": [
-          "**/node_modules/**",
-          "**/dist/**",
-          "**/build/**"
-        ],
-        "testMatch": [
-          "**/accessibility/**/*.spec.ts"
-        ],
-        "timeout": 60000
-      },
-      {
-        "outputDir": "/Users/dcversus/Documents/GitHub/dcversus.wtf/test-results",
-        "repeatEach": 1,
-        "retries": 0,
-        "metadata": {},
-        "id": "performance",
-        "name": "performance",
-        "testDir": "/Users/dcversus/Documents/GitHub/dcversus.wtf/tests",
-        "testIgnore": [
-          "**/node_modules/**",
-          "**/dist/**",
-          "**/build/**"
-        ],
-        "testMatch": [
-          "**/performance/**/*.spec.ts"
-        ],
-        "timeout": 60000
+        "timeout": 30000
       }
     ],
     "shard": null,
@@ -192,24 +53,19 @@
     "updateSnapshots": "missing",
     "updateSourceMethod": "patch",
     "version": "1.57.0",
-    "workers": 4,
-    "webServer": {
-      "command": "npm run dev",
-      "url": "http://localhost:5173",
-      "reuseExistingServer": true,
-      "timeout": 120000
-    }
+    "workers": 1,
+    "webServer": null
   },
   "suites": [],
   "errors": [
     {
-      "message": "Error: Timed out waiting 120000ms from config.webServer.",
-      "stack": "Error: Timed out waiting 120000ms from config.webServer."
+      "message": "TypeError: Cannot redefine property: Symbol($$jest-matchers-object)",
+      "stack": "TypeError: Cannot redefine property: Symbol($$jest-matchers-object)\n    at /Users/dcversus/Documents/GitHub/dcversus.wtf/node_modules/@vitest/expect/dist/index.js:680:9"
     }
   ],
   "stats": {
-    "startTime": "2025-12-17T03:49:33.932Z",
-    "duration": 120328.233,
+    "startTime": "2025-12-17T06:11:51.877Z",
+    "duration": 53.03499999999997,
     "expected": 0,
     "skipped": 0,
     "unexpected": 0,
