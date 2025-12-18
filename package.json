@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "tsc && vite build && rm -rf docs/js && mkdir -p docs/js && cp dist/main-*.js docs/js/main.js",
+    "build": "tsc && vite build && rm -rf docs/js docs/css && mkdir -p docs/js docs/css && cp dist/main-*.js docs/js/main.js && cp dist/styles-*.css docs/css/styles.css",
     "serve": "npx serve docs -l 3000",
     "start": "npm run serve",
     "type-check": "tsc --noEmit",
