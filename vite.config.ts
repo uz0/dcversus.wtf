@@ -5,15 +5,16 @@ import tailwindcss from '@tailwindcss/vite';
 export default defineConfig({
   plugins: [tailwindcss()],
   build: {
-    outDir: 'dist',
+    outDir: 'docs',
+    emptyOutDir: false, // Preserve existing docs files (index.html, icons, etc.)
     rollupOptions: {
       input: {
         main: resolve(__dirname, 'src/main.ts'),
         styles: resolve(__dirname, 'src/styles.css')
       },
       output: {
-        entryFileNames: 'main-[hash].js',
-        assetFileNames: '[name]-[hash].[ext]'
+        entryFileNames: 'js/[name].js',
+        assetFileNames: 'css/[name].[ext]'
       }
     },
     minify: 'terser'
