@@ -6,8 +6,7 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
-    "serve": "npx serve docs -l 3000",
-    "start": "npm run serve",
+    "start": "npx serve docs -l 3000",
     "type-check": "tsc --noEmit",
     "lint": "eslint src --fix",
     "test": "npm run test:unit",
